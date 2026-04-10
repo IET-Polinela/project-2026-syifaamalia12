@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detail Laporan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fb;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 35px;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #1e293b;
+            margin-bottom: 25px;
+        }
+
+        .detail-item {
+            margin-bottom: 18px;
+            padding: 14px;
+            background-color: #f8fafc;
+            border-radius: 10px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #0f172a;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .value {
+            color: #334155;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .reported {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .verified {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .in-progress {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .resolved {
+            background-color: #dcfce7;
+            color: #15803d;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Detail Laporan</h1>
+
+        <div class="detail-item">
+            <span class="label">Judul</span>
+            <span class="value">{{ report.title }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="label">Kategori</span>
+            <span class="value">{{ report.category }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="label">Deskripsi</span>
+            <span class="value">{{ report.description }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="label">Lokasi</span>
+            <span class="value">{{ report.location }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="label">Tanggal Kejadian</span>
+            <span class="value">{{ report.incident_date|date:"d-m-Y" }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="label">Status</span>
+            {% if report.status == 'REPORTED' %}
+                <span class="status reported">{{ report.get_status_display }}</span>
+            {% elif report.status == 'VERIFIED' %}
+                <span class="status verified">{{ report.get_status_display }}</span>
+            {% elif report.status == 'IN_PROGRESS' %}
+                <span class="status in-progress">{{ report.get_status_display }}</span>
+            {% elif report.status == 'RESOLVED' %}
+                <span class="status resolved">{{ report.get_status_display }}</span>
+            {% endif %}
+        </div>
+
+        <div class="detail-item">
+            <span class="label">Dibuat pada</span>
+            <span class="value">{{ report.created_at|date:"d-m-Y H:i" }} WIB</span>
+        </div>
+
+        <a href="{% url 'home' %}" class="back-link">← Kembali ke Daftar Laporan</a>
+    </div>
+</body>
+</html>

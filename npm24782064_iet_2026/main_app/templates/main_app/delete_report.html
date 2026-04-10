@@ -2,25 +2,76 @@
 <html>
 <head>
     <title>Hapus Laporan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fb;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 35px;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        h1 {
+            color: #b91c1c;
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: #334155;
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+
+        .btn-delete {
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            margin-right: 10px;
+        }
+
+        .btn-delete:hover {
+            background-color: #b91c1c;
+        }
+
+        .btn-cancel {
+            text-decoration: none;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .btn-cancel:hover {
+            background-color: #cbd5e1;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hapus Laporan</h1>
+    <div class="container">
+        <h1>Hapus Laporan</h1>
+        <p>Apakah Anda yakin ingin menghapus laporan <strong>"{{ object.title }}"</strong>?</p>
 
-    <p>Apakah Anda yakin ingin menghapus laporan berikut?</p>
+        <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn-delete">Ya, Hapus</button>
+        </form>
 
-    <ul>
-        <li><strong>Judul:</strong> {{ report.title }}</li>
-        <li><strong>Kategori:</strong> {{ report.category }}</li>
-        <li><strong>Lokasi:</strong> {{ report.location }}</li>
-        <li><strong>Tanggal Kejadian:</strong> {{ report.incident_date }}</li>
-    </ul>
-
-    <form method="POST">
-        {% csrf_token %}
-        <button type="submit">Ya, Hapus</button>
-    </form>
-
-    <br>
-    <a href="{% url 'home' %}">Batal</a>
+        <a href="{% url 'home' %}" class="btn-cancel">Batal</a>
+    </div>
 </body>
 </html>
