@@ -1,94 +1,79 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Tambah Laporan</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7fb;
-            margin: 0;
-            padding: 30px;
-        }
+{% extends 'base.html' %}
+{% block breadcrumb %}
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'home_landing' %}">Home</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'report' %}">Reports</a>
+        </li>
+        <li class="breadcrumb-item active">Tambah Laporan</li>
+    </ol>
+</nav>
+{% endblock %}
+{% block content %}
 
-        .container {
-            max-width: 700px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-        }
+<div class="card shadow-sm p-4">
 
-        h1 {
-            color: #1e293b;
-            margin-bottom: 10px;
-        }
+<h4>Tambah Laporan</h4>
 
-        p.subtitle {
-            color: #64748b;
-            margin-bottom: 25px;
-        }
+<form method="post" action="{% url 'add_report' %}" id="reportForm">
+{% csrf_token %}
 
-        form p {
-            margin-bottom: 18px;
-        }
+<h5 class="mb-3">Form Laporan</h5>
+<hr>
 
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 6px;
-            color: #334155;
-        }
+<div class="mb-3">
+    {{ form.title.label_tag }}
+    {{ form.title }}
+</div>
 
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 15px;
-            box-sizing: border-box;
-        }
+<div class="mb-3">
+    {{ form.category.label_tag }}
+    {{ form.category }}
+</div>
 
-        textarea {
-            min-height: 120px;
-        }
+<div class="mb-3">
+    {{ form.location.label_tag }}
+    {{ form.location }}
+</div>
 
-        .btn-submit {
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 15px;
-        }
+<div class="mb-3">
+    {{ form.incident_date.label_tag }}
+    {{ form.incident_date }}
+</div>
 
-        .btn-submit:hover {
-            background-color: #1d4ed8;
-        }
+<div class="mb-3">
+    {{ form.description.label_tag }}
+    {{ form.description }}
+</div>
 
-        .back-link {
-            display: inline-block;
-            margin-top: 18px;
-            text-decoration: none;
-            color: #475569;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Tambah Laporan</h1>
-        <p class="subtitle">Isi form berikut untuk menambahkan laporan baru ke sistem.</p>
+<button type="submit"
+class="btn"
+style="background:#22c55e; color:white;"
+id="submitBtn">
+Simpan
+</button>
 
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn-submit">Simpan Laporan</button>
-        </form>
+<a href="{% url 'report' %}" class="btn btn-light">Kembali</a>
 
-        <a href="{% url 'home' %}" class="back-link">← Kembali ke Daftar Laporan</a>
-    </div>
-</body>
-</html>
+</form>
+
+</div>
+
+<script>
+document.getElementById('reportForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = 'Loading...';
+
+    setTimeout(() => {
+        e.target.submit();
+    }, 50);
+});
+</script>
+
+{% endblock %}
