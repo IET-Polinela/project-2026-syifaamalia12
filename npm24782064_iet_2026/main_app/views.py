@@ -58,7 +58,6 @@ class ReportDeleteView(DeleteView):
 class ReportUpdateStatusView(View):
     def post(self, request, pk):
         report = get_object_or_404(Report, pk=pk)
-        new_status = request.POST.get('status')
 
         flow = {
             'REPORTED': 'VERIFIED',
@@ -66,9 +65,11 @@ class ReportUpdateStatusView(View):
             'IN_PROGRESS': 'RESOLVED',
         }
 
-        if report.status in flow and new_status == flow[report.status]:
-            report.status = new_status
+        if report.status in flow:
+            report.status = flow[report.status]
             report.save()
             messages.success(request, "Status berhasil diubah")
+        else:
+            messages.error(request, "Status tidak dapat diubah")
 
         return redirect('report')
