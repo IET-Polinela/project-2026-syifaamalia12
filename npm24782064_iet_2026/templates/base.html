@@ -158,6 +158,42 @@ body {
                 <li class="nav-item">
                     <a class="nav-link {% if 'contacts' in request.path %}active{% endif %}" href="{% url 'contacts' %}">Contact</a>
                 </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="rounded-circle bg-light text-dark d-inline-flex justify-content-center align-items-center fw-bold me-2"
+                            style="width: 36px; height: 36px;">
+                            {{ user.username|first|upper }}
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li>
+                         <span class="dropdown-item-text fw-semibold">
+                                {% if user.is_admin %}
+                                    Admin: {{ user.username }}
+                                {% else %}
+                                    Citizen: {{ user.username }}
+                                {% endif %}
+                            </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{% url 'logout' %}" method="post" class="px-3 py-1">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm w-100">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link {% if 'login' in request.path %}active{% endif %}" href="{% url 'login' %}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'register' in request.path %}active{% endif %}" href="{% url 'register' %}">Register</a>
+                </li>
+                
+                {% endif %}
             </ul>
         </div>
     </div>

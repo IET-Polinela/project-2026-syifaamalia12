@@ -41,7 +41,14 @@ INSTALLED_APPS = [
     'main_app',
     'about',
     'contacts',
+    'usermanagement_24782064',
 ]
+
+AUTH_USER_MODEL = 'usermanagement_24782064.CustomUser'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -79,7 +86,7 @@ WSGI_APPLICATION = 'npm24782064_iet_2026.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'smartcity_db',
+        'NAME': 'smart_city',
         'USER': 'postgres',
         'PASSWORD': 'syifa123',
         'HOST': 'localhost',

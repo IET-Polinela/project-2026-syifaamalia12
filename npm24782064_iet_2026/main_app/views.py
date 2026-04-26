@@ -6,7 +6,22 @@ from django.contrib import messages
 from .models import Report
 from .forms import ReportForm
 from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
+class AdminRequiredMixin(LoginRequiredMixin):
+    login_url = '/login/'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.error(request, "Silakan login terlebih dahulu")
+            return redirect('login')
+
+        if not request.user.is_admin:
+            messages.error(request, "Akses ditolak, hanya admin yang dapat mengakses fitur ini.")
+            return redirect('report')
+
+        return super().dispatch(request, *args, **kwargs)
+    
 class HomeView(TemplateView):
     template_name = 'main_app/home_landing.html'
 
@@ -24,7 +39,7 @@ class ReportDetailView(DetailView):
     context_object_name = 'report'
 
 
-class ReportCreateView(CreateView):
+class ReportCreateView(AdminRequiredMixin, CreateView):
     model = Report
     form_class = ReportForm
     template_name = 'main_app/add_report.html'
@@ -34,7 +49,7 @@ class ReportCreateView(CreateView):
         messages.success(self.request, "Laporan berhasil ditambahkan")
         return super().form_valid(form)
 
-class ReportUpdateView(UpdateView):
+class ReportUpdateView(AdminRequiredMixin, UpdateView):
     model = Report
     form_class = ReportForm
     template_name = 'main_app/edit_report.html'
@@ -45,7 +60,7 @@ class ReportUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class ReportDeleteView(DeleteView):
+class ReportDeleteView(AdminRequiredMixin, DeleteView):
     model = Report
     template_name = 'main_app/delete_report.html'
     success_url = reverse_lazy('report')
@@ -57,6 +72,14 @@ class ReportDeleteView(DeleteView):
 
 class ReportUpdateStatusView(View):
     def post(self, request, pk):
+        if not request.user.is_authenticated:
+            messages.error(request, "Silakan login terlebih dahulu")
+            return redirect('login')
+
+        if not request.user.is_admin:
+            messages.error(request, "Akses Ditolak")
+            return redirect('report')
+
         report = get_object_or_404(Report, pk=pk)
 
         flow = {
