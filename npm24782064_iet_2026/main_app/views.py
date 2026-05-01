@@ -7,6 +7,7 @@ from .models import Report
 from .forms import ReportForm
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
 
 class AdminRequiredMixin(LoginRequiredMixin):
     login_url = '/login/'
@@ -96,3 +97,43 @@ class ReportUpdateStatusView(View):
             messages.error(request, "Status tidak dapat diubah")
 
         return redirect('report')
+    
+class ReportSearchJsonView(View):
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('q', '')
+
+        reports = Report.objects.all().order_by('-created_at')
+
+        if query:
+            reports = reports.filter(title__icontains=query)
+
+        data = list(
+            reports.values(
+                'id',
+                'title',
+                'category',
+                'location',
+                'incident_date',
+                'status'
+            )
+        )
+
+        return JsonResponse({'reports': data})
+
+
+class ReportDetailJsonView(View):
+    def get(self, request, pk, *args, **kwargs):
+        report = get_object_or_404(Report, pk=pk)
+
+        data = {
+            'id': report.id,
+            'title': report.title,
+            'category': report.category,
+            'location': report.location,
+            'description': report.description,
+            'status': report.status,
+            'incident_date': report.incident_date.strftime('%Y-%m-%d'),
+            'created_at': report.created_at.strftime('%Y-%m-%d %H:%M'),
+        }
+
+        return JsonResponse(data)

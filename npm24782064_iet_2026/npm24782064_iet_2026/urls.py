@@ -8,7 +8,7 @@ urlpatterns = [
     path('about/', include('about.urls')),
     path('contacts/', include('contacts.urls')),
     path('', include('usermanagement_24782064.urls')),
-
+    path('', include('dashboard_24782064.urls')),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', CustomLogoutView.as_view(next_page='login'), name='logout'),
 ]
