@@ -22,8 +22,8 @@
 
         /* Navbar */
         .navbar {
-            background: #1f3b63 !important;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #0f2747 !important;
+            box-shadow:0 2px 12px rgba(0,0,0,.1);
         }
 
         .navbar-brand {
@@ -33,48 +33,253 @@
         }
 
         /* Card */
-        .card {
-            border: none !important;
-            border-radius: 15px;
-            background: #ffffff;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        .card{
+            background:#fff;
+            border:none;
+            border-radius:20px;
+            box-shadow:
+                0 2px 10px rgba(0,0,0,.04),
+                0 8px 24px rgba(15,39,71,.08);
         }
-
         /* Button */
         .btn-primary {
             background-color: #1f3b63;
             border-color: #1f3b63;
+            font-weight: 700;
         }
 
         .btn-primary:hover {
-            background-color: #284b7d;
+            background: #284b7d;
             border-color: #284b7d;
         }
 
         /* Form */
-        .form-control {
-            border-radius: 8px;
+        .form-control,
+        .form-select{
+            border-radius:12px;
+            min-height:50px;
+            border:1px solid #dbe3ef;
         }
 
-        .form-control:focus {
-            border-color: #1f3b63;
-            box-shadow: 0 0 0 0.15rem rgba(31,59,99,.25);
+        .form-control:focus,
+        .form-select:focus{
+            border-color:#2563eb;
+            box-shadow:0 0 0 .15rem rgba(37,99,235,.15);
+        }
+
+        .form-label{
+            font-weight:600;
+            color:#0f2747;
         }
 
         /* Heading */
         h4, h5, h6 {
-            color: #1f3b63;
+            color:#0f2747;
             font-weight: 700;
         }
 
         /* Icon */
         .bi {
-            color: #1f3b63;
+            color: #60a5fa;
         }
 
         .text-muted {
             color: #6c757d !important;
         }
+
+        .report-card {
+            background: #ffffff;
+            border: none;
+            transition: .25s;
+            border-radius: 18px;
+
+            box-shadow:
+                0 2px 10px rgba(0,0,0,.04),
+                0 8px 24px rgba(15,39,71,.08);
+        }
+        .report-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37,99,235,.25);
+        }
+
+        .dashboard-tab{
+
+            border:none;
+            background:white;
+
+            height:60px;
+            min-width:220px;
+
+            font-size:1rem;
+            font-weight:700;
+
+            color:#64748b;
+
+            border-bottom:3px solid transparent;
+
+            transition:.2s;
+        }
+
+        .dashboard-tab:hover{
+
+            color:#0f2747;
+
+        }
+
+        .dashboard-tab.active{
+
+            color:#0f2747;
+
+            border-bottom:3px solid #2563eb;
+
+            background:white;
+        }
+
+        .modal-content {
+            background: white;
+            color: #1e293b;
+            border-radius: 20px;
+        }
+
+        .modal-header {
+            background:#0f2747;
+            color:white;
+            border:none;
+        }
+
+        .modal-header .btn-close{
+
+            filter:invert(1);
+
+            opacity:.8;
+        }
+
+        .stat-box{
+
+            display:flex;
+            align-items:center;
+            gap:15px;
+
+            padding:18px 8px;
+
+        }
+
+        .stat-divider{
+
+            height:1px;
+            background:#e5e7eb;
+            margin:0 5px;
+
+        }
+
+        .stat-icon{
+
+            width:54px;
+            height:54px;
+
+            border-radius:16px;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+            font-size:1.5rem;
+        }
+
+        .draft-icon{
+
+            background:#eef4ff;
+            color:#2563eb;
+        }
+
+        .process-icon{
+
+            background:#fff7e6;
+            color:#f59e0b;
+        }
+
+        .done-icon{
+
+            background:#eafaf0;
+            color:#16a34a;
+        }
+
+        .stat-content{
+
+            flex:1;
+        }
+
+        .stat-content h6{
+
+            margin-bottom:2px;
+            font-weight:700;
+        }
+
+        .stat-content small{
+
+            color:#64748b;
+        }
+
+        .stat-number{
+
+            font-size:2rem;
+            font-weight:700;
+        }
+
+        .report-card{
+
+            border:none;
+            border-radius:18px;
+
+            box-shadow:
+                0 2px 10px rgba(0,0,0,.05),
+                0 8px 20px rgba(0,0,0,.06);
+
+        }
+
+        .report-card .card-body{
+
+            padding:22px;
+
+        }
+
+        .category-badge{
+
+            padding:8px 14px;
+
+            border-radius:10px;
+
+            font-size:.85rem;
+            font-weight:700;
+
+            background:#eef4ff;
+            color:#2563eb;
+
+            border:1px solid #bfd3ff;
+
+        }
+
+        .custom-progress{
+
+            height:16px;
+
+            border-radius:50px;
+
+            background:#e9edf3;
+
+            overflow:hidden;
+        }
+
+        .custom-progress-bar{
+
+            font-size:.75rem;
+            font-weight:700;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+
     </style>
 </head>
 
@@ -97,6 +302,168 @@
           id="app-content">
     </main>
 
+<!-- Modal Laporan -->
+<div class="modal fade"
+     id="reportModal"
+     tabindex="-1"
+     aria-labelledby="reportModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content border-0 shadow">
+
+            <div
+                class="modal-header text-white"
+                style="background:#0f2747;">
+
+                <h5 class="modal-title fw-bold text-white"
+                    id="reportModalLabel">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    Buat Laporan Baru
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <form id="reportForm">
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+
+                            <i class="bi bi-card-heading me-2"></i>
+                            Judul Laporan
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="title"
+                            placeholder="Contoh: Lampu Jalan Mati di Jl. Ahmad Yani"
+                            required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+
+                            <i class="bi bi-chat-left-text me-2"></i>
+                            Deskripsi
+
+                        </label>
+
+                        <textarea
+                            class="form-control"
+                            id="description"
+                            rows="4"
+                            placeholder="Jelaskan kondisi yang terjadi secara detail..."
+                            required></textarea>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+
+                            <i class="bi bi-geo-alt me-2"></i>
+                            Lokasi
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="location"
+                            placeholder="Masukkan lokasi kejadian"
+                            required>
+
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Kategori</label>
+                        <select
+                            class="form-select"
+                            id="category"
+                            required>
+
+                            <option value="">
+                                Pilih Kategori
+                            </option>
+
+                            <option value="Jalan">
+                                Jalan
+                            </option>
+
+                            <option value="Banjir">
+                                Banjir
+                            </option>
+
+                            <option value="Sampah">
+                                Sampah
+                            </option>
+
+                            <option value="Lampu Mati">
+                                Lampu Mati
+                            </option>
+
+                            <option value="Fasilitas Umum">
+                                Fasilitas Umum
+                            </option>
+
+                        </select>
+                               
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tanggal Kejadian</label>
+                        <input type="date"
+                               class="form-control"
+                               id="incident_date"
+                               required>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary fw-bold px-4"
+                            id="btnDraft">
+                            Simpan Draft
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn btn-primary fw-bold px-4"
+                            id="btnSubmit">
+                            Ajukan
+                            <i class="bi bi-send-fill ms-1"></i>
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/app.js"></script>

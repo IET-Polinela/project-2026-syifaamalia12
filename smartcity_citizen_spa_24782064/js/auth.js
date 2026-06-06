@@ -44,6 +44,11 @@ function setupLoginForm() {
                         data.refresh
                     );
 
+                    localStorage.setItem(
+                        'username',
+                        username
+                    );
+
                     alert('Login berhasil');
 
                     window.location.hash =
