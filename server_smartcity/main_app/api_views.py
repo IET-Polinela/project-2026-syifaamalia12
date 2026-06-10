@@ -1,3 +1,4 @@
+from rest_framework.exceptions import PermissionDenied
 from rest_framework import viewsets, permissions
 from .models import Report
 from .serializers import ReportSerializer
@@ -17,7 +18,19 @@ class ReportViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
 
-        if self.action in ['update', 'partial_update', 'destroy']:
+        if (
+            self.action == 'create'
+            and self.request.user.is_admin
+        ):
+            raise PermissionDenied(
+                "Admin tidak boleh membuat laporan"
+            )
+
+        if self.action in [
+            'update',
+            'partial_update',
+            'destroy'
+        ]:
             return [
                 permissions.IsAuthenticated(),
                 IsOwnerAndDraftOrReadOnly()
@@ -26,7 +39,14 @@ class ReportViewSet(viewsets.ModelViewSet):
         return [permissions.IsAuthenticated()]
 
     def perform_create(self, serializer):
-        serializer.save(reporter=self.request.user)
+        
+        if self.request.user.is_admin:
+            raise PermissionDenied(
+                "Admin tidak diperbolehkan membuat laporan."
+            )
+        serializer.save(
+            reporter=self.request.user
+        )
 
     def get_queryset(self):
 

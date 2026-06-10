@@ -420,42 +420,41 @@ document.addEventListener(
     }
 );
 
-document.addEventListener(
-    'click',
-    function(e) {
+document.addEventListener('click', function (e) {
 
-        if (
-            e.target.id === 'btnNewReport'
-        ) {
+    const btn = e.target.closest('#btnNewReport');
 
-            console.log(
-                'BTN NEW REPORT DIKLIK'
-            );
+    if (!btn) return;
 
-            editingReportId = null;
+    const username =
+        localStorage.getItem('username');
 
-            document.getElementById(
-                'reportForm'
-            ).reset();
+    if (username === 'min') {
 
-            document.getElementById(
-                'reportModalLabel'
-            ).innerHTML =
-                '<i class="bi bi-pencil-square me-2"></i>Buat Laporan Baru';
+        alert(
+            'Admin tidak diperbolehkan membuat laporan'
+        );
 
-            const modal =
-                new bootstrap.Modal(
-                    document.getElementById(
-                        'reportModal'
-                    )
-                );
-
-            modal.show();
-
-        }
-
+        return;
     }
-);
+
+    if (window.location.hash !== '#dashboard') {
+        return;
+    }
+
+    editingReportId = null;
+
+    document.getElementById('reportForm').reset();
+
+    document.getElementById('reportModalLabel').innerHTML =
+        '<i class="bi bi-pencil-square me-2"></i>Buat Laporan Baru';
+
+    const modal = new bootstrap.Modal(
+        document.getElementById('reportModal')
+    );
+
+    modal.show();
+});
 
 document.addEventListener(
     'click',
