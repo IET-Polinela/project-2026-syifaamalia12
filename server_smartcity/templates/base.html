@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>{% block title %}Kota Hidup{% endblock %}</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+    background: #f4f6f9;
+}
+
+/* Navbar */
+.navbar {
+    border-radius: 0 0 15px 15px;
+    background: #1e3a5f !important;
+}
+
+/* Card */
+.card {
+    border-radius: 16px;
+    border: none;
+}
+
+/* Table */
+.table thead {
+    background: #0f172a;
+    color: white;
+}
+.table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    background: #eef2f7;
+    padding: 8px 15px;
+    border-radius: 10px;
+}
+
+/* STATUS BADGE */
+.badge-soft-primary { background:#dbeafe; color:#1e3a5f; }
+.badge-soft-warning { background:#f6e7b0; color:#8a5a00; }
+.badge-soft-info { background:#ccfbf1; color:#0f766e; }
+.badge-soft-success { background:#d9f3e4; color:#2f855a; }
+
+/* TOMBOL TAMBAH */
+.btn-primary {
+    background: #1e3a5f;
+    border: none;
+    border-radius: 10px;
+    padding: 6px 14px;
+    font-size: 14px;
+}
+.btn-primary:hover {
+    background: #16324f;
+}
+
+/* AKSI */
+.btn-soft-primary {
+    background: #1e3a5f;
+    color: white;
+    border-radius: 8px;
+    border: none;
+}
+.btn-soft-primary:hover {
+    background: #16324f;
+}
+
+.btn-soft-success {
+    background: #2f855a; 
+    color: white;
+    border-radius: 8px;
+    border: none;
+}
+.btn-soft-success:hover {
+    background: #276749; 
+}
+
+.btn-soft-danger {
+    background: #c53030;
+    color: white;
+    border-radius: 8px;
+    border: none;
+}
+.btn-soft-danger:hover {
+    background: #9b2c2c;
+}
+
+/* PROGRESS */
+.btn-soft-warning {
+    background: #f6e7b0;
+    color: #8a5a00;
+    border-radius: 8px;
+    border: none;
+}
+.btn-soft-warning:hover {
+    background: #edd78a;
+}
+
+.btn-soft-info {
+    background: #dbeafe;
+    color: #1e40af;
+    border-radius: 8px;
+    border: none;
+}
+.btn-soft-info:hover {
+    background: #bfdbfe;
+}
+
+.btn-soft-success-light {
+    background: #d9f3e4;
+    color: #2f855a;
+    border-radius: 8px;
+    border: none;
+}
+
+/* BUTTON SIMPAN */
+.btn-success {
+    background: #2f855a;
+    border: none;
+    border-radius: 10px;
+    padding: 6px 14px;
+}
+.btn-success:hover {
+    background: #276749; 
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">Kota Hidup</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home_landing' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'dashboard' in request.path %}active{% endif %}" href="{% url 'dashboard' %}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'reports' in request.path %}active{% endif %}" href="{% url 'report' %}">Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'about' in request.path %}active{% endif %}" href="{% url 'about' %}">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'contacts' in request.path %}active{% endif %}" href="{% url 'contacts' %}">Contact</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="rounded-circle bg-light text-dark d-inline-flex justify-content-center align-items-center fw-bold me-2"
+                            style="width: 36px; height: 36px;">
+                            {{ user.username|first|upper }}
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li>
+                         <span class="dropdown-item-text fw-semibold">
+                                {% if user.is_admin %}
+                                    Admin: {{ user.username }}
+                                {% else %}
+                                    Citizen: {{ user.username }}
+                                {% endif %}
+                            </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{% url 'logout' %}" method="post" class="px-3 py-1">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm w-100">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link {% if 'login' in request.path %}active{% endif %}" href="{% url 'login' %}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'register' in request.path %}active{% endif %}" href="{% url 'register' %}">Register</a>
+                </li>
+                
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="container mt-3">
+    {% block breadcrumb %}
+    {% endblock %}
+</div>
+
+<!-- ALERT -->
+<div class="container mt-2">
+{% for message in messages %}
+<div class="alert alert-success alert-dismissible fade show shadow-sm">
+{{ message }}
+<button class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+</div>
+
+<!-- CONTENT -->
+<div class="container mt-4">
+{% block content %}{% endblock %}
+</div>
+
+<!-- Bootstrap JS (WAJIB biar alert & button jalan) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
