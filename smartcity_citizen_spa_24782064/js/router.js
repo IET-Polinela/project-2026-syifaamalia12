@@ -78,31 +78,59 @@ const routes = {
 
             <div class="stat-divider"></div>
 
-            <div class="stat-box">
+                <div class="stat-divider"></div>
 
-                <div class="stat-icon process-icon">
-                    <i class="bi bi-clock-history"></i>
+                <div class="stat-box">
+                    <div class="stat-icon">
+                        <i class="bi bi-send"></i>
+                    </div>
+
+                    <div class="stat-content">
+                        <h6>Ajukan</h6>
+                        <small>Menunggu verifikasi</small>
+                    </div>
+
+                    <div class="stat-number text-info"
+                        id="submitCount">
+                        0
+                    </div>
                 </div>
 
-                <div class="stat-content">
+                <div class="stat-divider"></div>
 
-                    <h6>Diproses</h6>
+                <div class="stat-box">
+                    <div class="stat-icon">
+                        <i class="bi bi-search"></i>
+                    </div>
 
-                    <small>
-                        Sedang ditangani
-                    </small>
+                    <div class="stat-content">
+                        <h6>Verifikasi</h6>
+                        <small>Sedang diverifikasi</small>
+                    </div>
 
+                    <div class="stat-number text-secondary"
+                        id="verifyCount">
+                        0
+                    </div>
                 </div>
 
-                <div
-                    class="stat-number text-warning"
-                    id="processCount">
+                <div class="stat-divider"></div>
 
-                    0
+                <div class="stat-box">
+                    <div class="stat-icon process-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
 
+                    <div class="stat-content">
+                        <h6>Diproses</h6>
+                        <small>Sedang ditangani</small>
+                    </div>
+
+                    <div class="stat-number text-warning"
+                        id="processCount">
+                        0
+                    </div>
                 </div>
-
-            </div>
 
             <div class="stat-divider"></div>
 

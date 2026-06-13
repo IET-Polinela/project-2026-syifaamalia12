@@ -199,11 +199,16 @@ async function loadSummaryStats() {
             report => report.status === 'DRAFT'
         ).length;
 
+        const submitCount = reports.filter(
+            report => report.status === 'REPORTED'
+        ).length;
+
+        const verifyCount = reports.filter(
+            report => report.status === 'VERIFIED'
+        ).length;
+
         const processCount = reports.filter(
-            report =>
-                report.status === 'REPORTED' ||
-                report.status === 'VERIFIED' ||
-                report.status === 'IN_PROGRESS'
+            report => report.status === 'IN_PROGRESS'
         ).length;
 
         const doneCount = reports.filter(
@@ -212,6 +217,12 @@ async function loadSummaryStats() {
 
         document.getElementById('draftCount').textContent =
             draftCount;
+
+        document.getElementById('submitCount').textContent =
+            submitCount;
+
+        document.getElementById('verifyCount').textContent =
+            verifyCount;
 
         document.getElementById('processCount').textContent =
             processCount;
