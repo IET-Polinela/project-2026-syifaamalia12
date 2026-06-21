@@ -30,4 +30,11 @@ urlpatterns = [
     ),
 
     path('api/docs/scalar/', scalar_viewer, name='scalar-ui'),
+
+    path(
+        'swagger/',
+        SpectacularSwaggerView.as_view(url_name='schema'),
+        name='swagger-ui-short'
+    ),
+    path('scalar/', scalar_viewer, name='scalar-ui-short'),
 ]
