@@ -20,7 +20,7 @@ class ReportViewSet(viewsets.ModelViewSet):
 
         if (
             self.action == 'create'
-            and self.request.user.is_admin
+            and getattr(self.request.user, 'is_admin', False)
         ):
             raise PermissionDenied(
                 "Admin tidak boleh membuat laporan"
@@ -40,7 +40,7 @@ class ReportViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         
-        if self.request.user.is_admin:
+        if getattr(self.request.user, 'is_admin', False):
             raise PermissionDenied(
                 "Admin tidak diperbolehkan membuat laporan."
             )
