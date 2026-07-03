@@ -1,3 +1,5 @@
+from main_app.views import HomeView
+from django.urls import path, include
 from django.contrib import admin
 from django.urls import path, include
 from usermanagement_24782064.views import CustomLoginView, CustomLogoutView
@@ -7,6 +9,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from django_scalar.views import scalar_viewer
 
 urlpatterns = [
+    path('', HomeView.as_view(), name='home'),
     path('admin/', admin.site.urls),
     path('', include('main_app.urls')),
     path('about/', include('about.urls')),

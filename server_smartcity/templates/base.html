@@ -210,12 +210,28 @@ body {
 
 <!-- ALERT -->
 <div class="container mt-2">
-{% for message in messages %}
-<div class="alert alert-success alert-dismissible fade show shadow-sm">
-{{ message }}
-<button class="btn-close" data-bs-dismiss="alert"></button>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show shadow-sm">
+                {{ message }}
+                <button class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
 </div>
-{% endfor %}
+
+<div class="container mt-3">
+
+    <nav class="breadcrumb bg-light p-2 rounded">
+        <a href="/">Home</a>
+
+        {% if breadcrumb %}
+            / {{ breadcrumb }}
+        {% endif %}
+    </nav>
+
 </div>
 
 <!-- CONTENT -->

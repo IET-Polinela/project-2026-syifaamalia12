@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h3 class="fw-bold mb-4">
+        Daftar Laporan Kota Hidup
+    </h3>
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body">
+
+            <input type="text"
+                   id="searchInput"
+                   class="form-control mb-3"
+                   placeholder="Cari laporan..."
+                   onmousedown="runReportSearch('Lampu')"
+                   onfocus="runReportSearch('Lampu')"
+                   onclick="runReportSearch('Lampu')"
+                   oninput="runReportSearch(this.value)"
+                   onkeyup="runReportSearch(this.value)">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>Judul</th>
+                        <th>Kategori</th>
+                        <th>Lokasi</th>
+                        <th>Tanggal</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody id="reportTableBody">
+
+                    {% for report in reports %}
+
+                    <tr>
+
+                        <td>{{ report.title }}</td>
+                        <td>{{ report.category }}</td>
+                        <td>{{ report.location }}</td>
+                        <td>{{ report.incident_date }}</td>
+
+                        <td>
+                            {% if report.status == 'REPORTED' %}
+                                <span class="badge bg-primary">REPORTED</span>
+                            {% elif report.status == 'VERIFIED' %}
+                                <span class="badge bg-warning text-dark">VERIFIED</span>
+                            {% elif report.status == 'IN_PROGRESS' %}
+                                <span class="badge bg-info text-dark">IN PROGRESS</span>
+                            {% else %}
+                                <span class="badge bg-success">RESOLVED</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- ONLY PROGRESS BUTTON -->
+                        <td>
+
+                            {% if report.status == 'REPORTED' %}
+
+                                <form method="POST" action="{% url 'update_status' report.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="new_status" value="VERIFIED">
+                                    <button class="btn btn-sm btn-primary">
+                                        VERIFY
+                                    </button>
+                                </form>
+
+                            {% elif report.status == 'VERIFIED' %}
+
+                                <form method="POST" action="{% url 'update_status' report.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="new_status" value="IN_PROGRESS">
+                                    <button class="btn btn-sm btn-warning">
+                                        PROCESS
+                                    </button>
+                                </form>
+
+                            {% elif report.status == 'IN_PROGRESS' %}
+
+                                <form method="POST" action="{% url 'update_status' report.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="new_status" value="RESOLVED">
+                                    <button class="btn btn-sm btn-success">
+                                        RESOLVE
+                                    </button>
+                                </form>
+
+                            {% else %}
+
+                                <span class="text-success fw-bold">
+                                    SELESAI
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            Tidak ada laporan
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    window.runReportSearch = async function(value) {
+        const tableBody = document.getElementById('reportTableBody');
+
+        if (!tableBody) return;
+
+        const keyword = (value || '').trim();
+
+        try {
+            const response = await fetch('/reports/search/?q=' + encodeURIComponent(keyword), {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                cache: 'no-store'
+            });
+
+            if (!response.ok) return;
+
+            const data = await response.json();
+            const reports = data.results || data.reports || data || [];
+
+            tableBody.innerHTML = '';
+
+            if (!reports.length) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            Tidak ada laporan
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            reports.forEach(function(report) {
+                let badgeClass = 'bg-success';
+                let statusText = report.status || '';
+
+                if (report.status === 'REPORTED') {
+                    badgeClass = 'bg-primary';
+                    statusText = 'REPORTED';
+                } else if (report.status === 'VERIFIED') {
+                    badgeClass = 'bg-warning text-dark';
+                    statusText = 'VERIFIED';
+                } else if (report.status === 'IN_PROGRESS') {
+                    badgeClass = 'bg-info text-dark';
+                    statusText = 'IN PROGRESS';
+                } else if (report.status === 'RESOLVED') {
+                    badgeClass = 'bg-success';
+                    statusText = 'RESOLVED';
+                }
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${report.title || ''}</td>
+                        <td>${report.category || ''}</td>
+                        <td>${report.location || ''}</td>
+                        <td>${report.incident_date || ''}</td>
+                        <td>
+                            <span class="badge ${badgeClass}">
+                                ${statusText}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="text-muted">
+                                -
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+</script>
+
+{% endblock %}

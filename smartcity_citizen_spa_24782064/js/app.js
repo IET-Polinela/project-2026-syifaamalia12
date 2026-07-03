@@ -1,3 +1,5 @@
+window.DASHBOARD_READY = false;
+
 let currentTab = 'my_reports';
 let currentPage = 1;
 
@@ -6,18 +8,17 @@ let totalPages = 1;
 
 let editingReportId = null;
 
-async function loadDashboardData(
-    tab = currentTab,
-    page = currentPage
-) {
+async function loadDashboardData(tab = currentTab, page = currentPage, search = '') {
 
     currentTab = tab;
     currentPage = page;
 
     try {
 
+        const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
+
         const response = await requestAPI(
-            `/api/report/?tab=${tab}&page=${page}`,
+            `/api/report/?tab=${tab}&page=${page}${searchParam}`,
             'GET'
         );
 
@@ -25,34 +26,27 @@ async function loadDashboardData(
 
             const data = await response.json();
 
-            console.log(data);
-
             allReports = data.results || [];
 
-            totalPages = Math.ceil(
-                (data.count || 0) / 10
-            );
+            totalPages = Math.ceil((data.count || 0) / 10);
+
+            updateStatusCounter(allReports);
 
             renderList();
             renderPagination();
-            loadSummaryStats();
+
+            if (typeof loadSummaryStats === 'function') {
+                loadSummaryStats();
+            }
 
         } else {
 
-            document.getElementById(
-                'listContainer'
-            ).innerHTML = `
-                <div class="alert alert-danger">
-                    Gagal memuat data laporan.
-                </div>
-            `;
-
+            document.getElementById('listContainer').innerHTML =
+                `<div class="alert alert-danger">Gagal memuat data laporan.</div>`;
         }
 
     } catch (error) {
-
         console.error(error);
-
     }
 }
 
@@ -71,19 +65,19 @@ async function editDraft(id) {
 
         const report = await response.json();
 
-        document.getElementById('title').value =
+        document.getElementById('inputTitle').value =
             report.title || '';
 
-        document.getElementById('description').value =
+        document.getElementById('inputDescription').value =
             report.description || '';
 
-        document.getElementById('location').value =
+        document.getElementById('inputLocation').value =
             report.location || '';
 
-        document.getElementById('category').value =
+        document.getElementById('inputCategory').value =
             report.category || '';
 
-        document.getElementById('incident_date').value =
+        document.getElementById('inputIncidentDate').value =
             report.incident_date || '';
 
         editingReportId = id;
@@ -108,73 +102,58 @@ async function editDraft(id) {
 
 async function submitReport(status) {
 
+    const username = localStorage.getItem('username');
+
+    if (username === 'admin' && status !== 'DRAFT') {
+        alert('Admin tidak boleh mengubah status laporan');
+        return;
+    }
+
     const payload = {
 
-        title:
-            document.getElementById('title').value,
-
-        description:
-            document.getElementById('description').value,
-
-        location:
-            document.getElementById('location').value,
-
-        category:
-            document.getElementById('category').value,
-
-        incident_date:
-            document.getElementById('incident_date').value,
-
+        title: document.getElementById('inputTitle').value,
+        description: document.getElementById('inputDescription').value,
+        location: document.getElementById('inputLocation').value,
+        category: document.getElementById('inputCategory').value,
+        incident_date: document.getElementById('inputIncidentDate').value,
         status: status
-
     };
 
     let endpoint = '/api/report/';
     let method = 'POST';
 
     if (editingReportId !== null) {
-
-        endpoint =
-            `/api/report/${editingReportId}/`;
-
+        endpoint = `/api/report/${editingReportId}/`;
         method = 'PUT';
-
     }
 
-    const response =
-        await requestAPI(
-            endpoint,
-            method,
-            payload
-        );
+    const response = await requestAPI(endpoint, method, payload);
 
-    if (
-        response.status === 201 ||
-        response.status === 200
-    ) {
+    if (response.status === 201 || response.status === 200) {
 
-        const modalElement =
-            document.getElementById(
-                'reportModal'
-            );
+        const modalElement = document.getElementById('reportModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
 
-        const modal =
-            bootstrap.Modal.getInstance(
-                modalElement
-            );
+        if (modal) {
+            modal.hide();
+        }
 
-        modal.hide();
-
-        document.getElementById(
-            'reportForm'
-        ).reset();
+        document.getElementById('reportForm').reset();
 
         editingReportId = null;
 
-        loadDashboardData(
-            currentTab,
-            currentPage
-        );
+        alert(`Laporan berhasil disimpan sebagai ${status}`);
+
+        await loadDashboardData(currentTab, currentPage);
+
+        if (status === 'DRAFT') {
+            const draftBadge = document.getElementById('draftCount');
+
+            if (draftBadge) {
+                const currentDraft = parseInt(draftBadge.textContent || '0', 10);
+                draftBadge.textContent = Math.max(currentDraft, 1);
+            }
+        }
     }
 }
 
@@ -255,7 +234,9 @@ function renderList() {
 
     container.innerHTML = '';
 
-    allReports.forEach(report => {
+    const paginated = allReports;
+
+    paginated.forEach(report => {
 
         let progress = 25;
 
@@ -273,6 +254,7 @@ function renderList() {
 
         container.innerHTML += `
 
+        <div class="col">
         <div class="card report-card mb-4">
 
             <div class="card-body">
@@ -345,6 +327,7 @@ function renderList() {
             </div>
 
         </div>
+        </div>
         `;
     });
 }
@@ -369,6 +352,7 @@ function renderPagination() {
     ) {
 
         container.innerHTML += `
+            <span class="page-item">
             <button
                 class="btn ${
                     i === currentPage
@@ -383,8 +367,25 @@ function renderPagination() {
                 ${i}
 
             </button>
+            </span>
         `;
     }
+}
+
+function renderChart() {
+
+    const el = document.getElementById('statusChart');
+    if (!el) return;
+
+    new Chart(el, {
+        type: 'bar',
+        data: {
+            labels: ['Draft', 'Reported', 'Done'],
+            datasets: [{
+                data: [5, 10, 7]
+            }]
+        }
+    });
 }
 
 document.addEventListener(
@@ -433,7 +434,7 @@ document.addEventListener(
 
 document.addEventListener('click', function (e) {
 
-    const btn = e.target.closest('#btnNewReport');
+    const btn = e.target.closest('#btnNewReport, #btnBukaModal');
 
     if (!btn) return;
 
@@ -480,7 +481,7 @@ document.addEventListener(
                 .classList.add('active');
 
             document
-                .getElementById('tabFeed')
+                .getElementById('tabFeedKota')
                 .classList.remove('active');
 
             loadDashboardData(
@@ -491,11 +492,12 @@ document.addEventListener(
         }
 
         if (
+            e.target.id === 'tabFeedKota' ||
             e.target.id === 'tabFeed'
         ) {
 
             document
-                .getElementById('tabFeed')
+                .getElementById('tabFeedKota')
                 .classList.add('active');
 
             document
@@ -511,3 +513,79 @@ document.addEventListener(
 
     }
 );
+
+document.addEventListener('input', function (e) {
+
+    if (e.target.id !== 'searchInput') return;
+
+    const value = e.target.value.trim();
+
+    loadDashboardData('my_reports', 1, value);
+});
+
+function updateStatusCounter(reports) {
+
+    const counter = {
+        DRAFT: 0,
+        REPORTED: 0,
+        VERIFIED: 0,
+        IN_PROGRESS: 0,
+        RESOLVED: 0
+    };
+
+    if (!reports || reports.length === 0) {
+        return;
+    }
+
+    reports.forEach(r => {
+        if (counter.hasOwnProperty(r.status)) {
+            counter[r.status]++;
+        }
+    });
+
+    const set = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = value;
+    };
+
+    set('draftCount', counter.DRAFT);
+    set('submitCount', counter.REPORTED);
+    set('verifyCount', counter.VERIFIED);
+    set('processCount', counter.IN_PROGRESS);
+    set('doneCount', counter.RESOLVED);
+}
+
+function initDashboard() {
+
+    const search = document.getElementById('searchInput');
+    if (search) {
+        search.addEventListener('input', function () {
+            loadDashboardData('my_reports', 1, this.value);
+        });
+    }
+
+    const btn = document.getElementById('btnBukaModal');
+    if (btn) {
+        btn.onclick = () => {
+            const modal = new bootstrap.Modal(
+                document.getElementById('reportModal')
+            );
+            modal.show();
+        };
+    }
+
+    const chart = document.getElementById('chartReports');
+    if (chart && window.Chart) {
+        new Chart(chart, {
+            type: 'bar',
+            data: {
+                labels: ['Draft','Verif','Proses','Selesai'],
+                datasets: [{
+                    data: [1,2,3,4]
+                }]
+            }
+        });
+    }
+}
+
+window.DASHBOARD_READY = true;

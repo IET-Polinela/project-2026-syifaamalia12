@@ -17,11 +17,13 @@ urlpatterns = [
 
     # Reports
     path('reports/', ReportListView.as_view(), name='report'),
+    path('reports/', ReportListView.as_view(), name='report_list'),
     path('reports/detail/<int:pk>/', ReportDetailView.as_view(), name='report_detail'),
 
     # CRUD
     path('reports/add/', ReportCreateView.as_view(), name='add_report'),
     path('reports/edit/<int:pk>/', ReportUpdateView.as_view(), name='edit_report'),
+    path('reports/edit/<int:pk>/', ReportUpdateView.as_view(), name='update_report'),
     path('reports/delete/<int:pk>/', ReportDeleteView.as_view(), name='delete_report'),
 
     # JSON for Live Search and Detail Modal

@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 
 STATUS_CHOICES = [
@@ -16,7 +17,7 @@ class Report(models.Model):
     description = models.TextField()
     location = models.CharField(max_length=200)
     category = models.CharField(max_length=100)
-    incident_date = models.DateField()
+    incident_date = models.DateField(default=timezone.localdate)
 
     reporter = models.ForeignKey(
         settings.AUTH_USER_MODEL,

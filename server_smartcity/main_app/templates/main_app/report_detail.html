@@ -42,6 +42,21 @@
 {% else %}
 <span class="badge badge-soft-success">Resolved</span>
 {% endif %}
+
+{% if user.is_admin %}
+
+    {% if report.status == 'REPORTED' %}
+        <a class="btn btn-warning btn-sm mt-2">VERIFIED</a>
+
+    {% elif report.status == 'VERIFIED' %}
+        <a class="btn btn-info btn-sm mt-2">IN_PROGRESS</a>
+
+    {% elif report.status == 'IN_PROGRESS' %}
+        <a class="btn btn-success btn-sm mt-2">RESOLVED</a>
+    {% endif %}
+
+{% endif %}
+
 </p>
 
 <a href="{% url 'report' %}" class="btn btn-primary">Kembali</a>

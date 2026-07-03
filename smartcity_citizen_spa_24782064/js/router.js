@@ -34,313 +34,341 @@ const routes = {
     `,
 
     '#dashboard': `
-        <div class="row g-4">
+    <div class="row g-4 align-items-start">
 
-            <aside class="col-12 col-lg-3">
+        <aside class="col-12 col-lg-3">
 
-                <div class="card border-0 p-3 shadow-sm sticky-top"
-                     style="top:20px;">
+            <div class="card border-0 p-3 shadow-sm sticky-top" style="top:20px;">
 
-                    <button
-                        class="btn btn-primary w-100 fw-bold py-3 mb-3"
-                        id="btnNewReport">
-                        <i class="bi bi-plus-circle-fill me-2"></i>
-                        Laporan Baru
-                    </button>
+                <button class="btn btn-primary w-100 fw-bold py-3 mb-3" id="btnBukaModal">
+                    <i class="bi bi-plus-circle-fill me-2"></i>
+                    Laporan Baru
+                </button>
 
-        <div class="mt-3">
+                <div class="mt-3" id="summaryStats">
 
-            <div class="stat-box">
+                    <div class="stat-box">
+                        <div class="stat-icon draft-icon">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h6>Draft</h6>
+                            <small>Laporan tersimpan</small>
+                        </div>
+                        <div class="stat-number badge bg-secondary" id="draftCount">0</div>
+                    </div>
 
-                <div class="stat-icon draft-icon">
-                    <i class="bi bi-file-earmark-text"></i>
-                </div>
+                    <div class="stat-divider"></div>
 
-                <div class="stat-content">
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="bi bi-send"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h6>Ajukan</h6>
+                            <small>Menunggu verifikasi</small>
+                        </div>
+                        <div class="stat-number" id="submitCount">0</div>
+                    </div>
 
-                    <h6>Draft</h6>
+                    <div class="stat-divider"></div>
 
-                    <small>
-                        Laporan tersimpan
-                    </small>
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h6>Verifikasi</h6>
+                            <small>Sedang diverifikasi</small>
+                        </div>
+                        <div class="stat-number" id="verifyCount">0</div>
+                    </div>
 
-                </div>
+                    <div class="stat-divider"></div>
 
-                <div
-                    class="stat-number text-primary"
-                    id="draftCount">
+                    <div class="stat-box">
+                        <div class="stat-icon process-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h6>Diproses</h6>
+                            <small>Sedang ditangani</small>
+                        </div>
+                        <div class="stat-number" id="processCount">0</div>
+                    </div>
 
-                    0
+                    <div class="stat-divider"></div>
+
+                    <div class="stat-box">
+                        <div class="stat-icon done-icon">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h6>Selesai</h6>
+                            <small>Telah selesai</small>
+                        </div>
+                        <div class="stat-number" id="doneCount">0</div>
+                    </div>
 
                 </div>
 
             </div>
 
-            <div class="stat-divider"></div>
+        </aside>
 
-                <div class="stat-divider"></div>
+        <section class="col-12 col-lg-6">
 
-                <div class="stat-box">
-                    <div class="stat-icon">
-                        <i class="bi bi-send"></i>
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-12 col-md-6">
+                            <canvas id="statusChart" height="180"></canvas>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <canvas id="categoryChart" height="180"></canvas>
+                        </div>
                     </div>
 
-                    <div class="stat-content">
-                        <h6>Ajukan</h6>
-                        <small>Menunggu verifikasi</small>
+                    <input type="text"
+                        id="searchInput"
+                        class="form-control mb-3"
+                        placeholder="Cari laporan...">
+
+                    <div class="d-flex justify-content-center gap-0 mb-4">
+
+                        <button class="dashboard-tab active" id="tabMyReports">
+                            Laporan Saya
+                        </button>
+
+                        <button class="dashboard-tab" id="tabFeedKota">
+                            Feed Kota
+                        </button>
+
                     </div>
 
-                    <div class="stat-number text-info"
-                        id="submitCount">
-                        0
-                    </div>
-                </div>
-
-                <div class="stat-divider"></div>
-
-                <div class="stat-box">
-                    <div class="stat-icon">
-                        <i class="bi bi-search"></i>
+                    <div id="listContainer">
+                        <div class="text-center text-muted p-5">
+                            Memuat data...
+                        </div>
                     </div>
 
-                    <div class="stat-content">
-                        <h6>Verifikasi</h6>
-                        <small>Sedang diverifikasi</small>
-                    </div>
-
-                    <div class="stat-number text-secondary"
-                        id="verifyCount">
-                        0
-                    </div>
-                </div>
-
-                <div class="stat-divider"></div>
-
-                <div class="stat-box">
-                    <div class="stat-icon process-icon">
-                        <i class="bi bi-clock-history"></i>
-                    </div>
-
-                    <div class="stat-content">
-                        <h6>Diproses</h6>
-                        <small>Sedang ditangani</small>
-                    </div>
-
-                    <div class="stat-number text-warning"
-                        id="processCount">
-                        0
-                    </div>
-                </div>
-
-            <div class="stat-divider"></div>
-
-            <div class="stat-box">
-
-                <div class="stat-icon done-icon">
-                    <i class="bi bi-check-circle"></i>
-                </div>
-
-                <div class="stat-content">
-
-                    <h6>Selesai</h6>
-
-                    <small>
-                        Telah selesai
-                    </small>
-
-                </div>
-
-                <div
-                    class="stat-number text-success"
-                    id="doneCount">
-
-                    0
+                    <div id="paginationContainer" class="mt-3"></div>
 
                 </div>
 
             </div>
 
-        </div>
+        </section>
 
-                </div>
+        <aside class="col-12 col-lg-3 d-none d-lg-block">
 
-            </aside>
+            <div class="card border-0 p-3 shadow-sm sticky-top" style="top:20px;">
 
-            <section class="col-12 col-lg-6">
+                <h6 class="fw-bold mb-3">
+                    <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                    Pengumuman
+                </h6>
 
-                <div class="card border-0 shadow-sm">
+                <hr>
 
-                    <div class="card-body">
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-megaphone fs-1 d-block mb-3"></i>
 
-                        <div class="d-flex justify-content-center gap-0 mb-4">
+                    <strong>Belum ada pengumuman</strong>
 
-                            <button
-                                class="dashboard-tab active"
-                                id="tabMyReports">
-
-                                <i class="bi bi-person me-2"></i>
-                                Laporan Saya
-
-                            </button>
-
-                            <button
-                                class="dashboard-tab"
-                                id="tabFeed">
-
-                                <i class="bi bi-people me-2"></i>
-                                Feed Kota
-
-                            </button>
-
-                        </div>
-
-                            <div id="listContainer">
-
-                            <div class="text-center text-muted p-5">
-                                Memuat data...
-                            </div>
-
-                        </div>
-
-                        <div id="paginationContainer"
-                            class="mt-3">
-                        </div>
-
+                    <div class="mt-2">
+                        Pengumuman terbaru akan ditampilkan di sini.
                     </div>
-
                 </div>
 
-            </section>
+            </div>
 
-            <aside class="col-12 col-lg-3 d-none d-lg-block">
+        </aside>
 
-                <div class="card border-0 p-3 shadow-sm sticky-top"
-                     style="top:20px;">
-
-                    <h6 class="fw-bold mb-3">
-                        <i class="bi bi-info-circle-fill text-primary me-2"></i>
-                        Pengumuman
-                    </h6>
-
-                    <hr>
-
-                    <div class="text-center text-muted py-5">
-
-                        <i class="bi bi-megaphone fs-1 d-block mb-3"></i>
-
-                        <strong>
-                            Belum ada pengumuman
-                        </strong>
-
-                        <div class="mt-2">
-                            Pengumuman terbaru akan
-                            ditampilkan di sini.
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </aside>
-
-        </div>
+    </div>
     `
 };
 
+function isAuthenticated() {
+    const token = localStorage.getItem("access_token");
+    return token && token !== "null" && token !== "undefined";
+}
+
+function guardRoute(hash) {
+
+    const auth = isAuthenticated();
+
+    if (!auth && hash === "#dashboard") {
+        location.hash = "#login";
+        return false;
+    }
+
+    if (auth && hash === "#login") {
+        location.hash = "#dashboard";
+        return false;
+    }
+
+    return true;
+}
+
+/* =========================
+   GLOBAL SAFE FIX (WAJIB)
+========================= */
+window.currentPage = 1;
+
+window.changePage = function(page) {
+    window.currentPage = page;
+    if (typeof loadDashboardData === 'function') {
+        loadDashboardData('my_reports', page);
+    }
+};
+
+window.apiInterceptor = function(response) {
+    if (response && response.status === 401) {
+        localStorage.clear();
+        window.location.hash = '#login';
+    }
+};
+
+async function apiFetch(url, options = {}) {
+
+    const token = localStorage.getItem('access_token');
+
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+        }
+    });
+
+    if (response.status === 401) {
+        localStorage.clear();
+        window.location.hash = '#login';
+    }
+
+    return response;
+}
+
+/* =========================
+   ROUTER
+========================= */
+function bootRouter() {
+
+    const run = () => {
+        handleRouting();
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', run);
+    } else {
+        run();
+    }
+}
+
+bootRouter();
+
+window.addEventListener('hashchange', handleRouting);
+
+function renderDashboardPage(app) {
+
+    app.innerHTML = routes['#dashboard'];
+
+    if (typeof loadDashboardData === 'function') {
+        loadDashboardData('my_reports', 1);
+    }
+
+    setTimeout(() => {
+        if (typeof initDashboard === 'function') {
+            initDashboard();
+        }
+
+        if (typeof renderChart === 'function') {
+            renderChart();
+        }
+    }, 50);
+}
 
 function handleRouting() {
 
     const hash = window.location.hash || '#login';
 
-    document.getElementById('app-content').innerHTML =
-        routes[hash] || routes['#login'];
+    const token = localStorage.getItem('access_token');
+    const hasToken = token && token !== 'null' && token !== 'undefined';
 
-    if (
-        hash === '#login' &&
-        typeof setupLoginForm === 'function'
-    ) {
+    const app = document.getElementById('app-content');
+    const nav = document.getElementById('nav-menu');
 
-        document.getElementById(
-            'nav-menu'
-        ).innerHTML = '';
+    if (!app) return;
 
-        setupLoginForm();
+    if (!hasToken && hash === '#dashboard') {
+        localStorage.clear();
+        window.location.hash = '#login';
+        app.innerHTML = routes['#login'];
+
+        if (nav) nav.innerHTML = '';
+
+        if (typeof setupLoginForm === 'function') {
+            setupLoginForm();
+        }
+
+        return;
     }
 
-    if (
-        hash === '#dashboard' &&
-        typeof loadDashboardData === 'function'
-    ) {
+    if (hasToken && hash === '#login') {
+        window.location.hash = '#dashboard';
+        renderDashboardPage(app);
+        return;
+    }
 
-        const username =
-            localStorage.getItem('username')
-            || 'Warga';
+    const safeRoute = hasToken ? hash : '#login';
 
-        document.getElementById(
-            'nav-menu'
-        ).innerHTML = `
+    if (safeRoute === '#login') {
+        app.innerHTML = routes['#login'];
 
-        <div class="dropdown">
+        if (nav) nav.innerHTML = '';
 
-            <button
-                class="btn text-white fw-bold dropdown-toggle"
-                data-bs-toggle="dropdown">
+        if (typeof setupLoginForm === 'function') {
+            setupLoginForm();
+        }
 
-                <i class="bi bi-person-circle me-2"></i>
-                 ${username}
+        return;
+    }
 
-            </button>
+    if (safeRoute === '#dashboard') {
+        renderDashboardPage(app);
+        return;
+    }
 
-            <ul class="dropdown-menu dropdown-menu-end">
+    if (hasToken) {
+        window.location.hash = '#dashboard';
+        renderDashboardPage(app);
+        return;
+    }
 
-                <li>
+    window.location.hash = '#login';
+    app.innerHTML = routes['#login'];
 
-                    <a
-                        class="dropdown-item text-danger"
-                        href="#logout">
+    if (nav) nav.innerHTML = '';
 
-                        <i class="bi bi-box-arrow-right me-2"></i>
-                        Logout
-
-                    </a>
-
-                </li>
-
-            </ul>
-
-        </div>
-        `;
-
-        loadDashboardData(
-            'my_reports',
-            1
-        );
+    if (typeof setupLoginForm === 'function') {
+        setupLoginForm();
     }
 }
 
-window.addEventListener(
-    'hashchange',
-    () => {
+/* =========================
+   EVENTS
+========================= */
+window.addEventListener('hashchange', () => {
 
-        if (
-            location.hash === '#logout'
-        ) {
-
-            localStorage.clear();
-
-            location.hash = '#login';
-
-        }
-
+    if (location.hash === '#logout') {
+        localStorage.clear();
+        window.location.hash = '#login';
+        return;
     }
-);
 
-window.addEventListener(
-    'hashchange',
-    handleRouting
-);
-
-window.addEventListener(
-    'DOMContentLoaded',
-    handleRouting
-);
+    handleRouting();
+});

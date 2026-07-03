@@ -1,14 +1,26 @@
 from django.views.generic import TemplateView, View
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.db.models import Count
 from main_app.models import Report
 
 
-class DashboardView(TemplateView):
+class AdminOnlyDispatchMixin:
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+
+        if not getattr(request.user, 'is_admin', False):
+            return redirect('home_landing')
+
+        return super().dispatch(request, *args, **kwargs)
+
+
+class DashboardView(AdminOnlyDispatchMixin, TemplateView):
     template_name = 'dashboard_24782064/dashboard.html'
 
 
-class DashboardDataView(View):
+class DashboardDataView(AdminOnlyDispatchMixin, View):
     def get(self, request, *args, **kwargs):
         status_data = list(
             Report.objects.values('status')

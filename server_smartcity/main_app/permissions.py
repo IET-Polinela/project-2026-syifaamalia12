@@ -8,6 +8,9 @@ class IsOwnerAndDraftOrReadOnly(permissions.BasePermission):
         # GET boleh untuk semua user login
         if request.method in permissions.SAFE_METHODS:
             return True
+        
+        if not request.user or not request.user.is_authenticated:
+            return False
 
         # PUT dan DELETE hanya untuk owner
         # dan status harus DRAFT
