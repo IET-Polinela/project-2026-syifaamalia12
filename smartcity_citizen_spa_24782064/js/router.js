@@ -122,16 +122,6 @@ const routes = {
 
                 <div class="card-body">
 
-                    <div class="row g-3 mb-4">
-                        <div class="col-12 col-md-6">
-                            <canvas id="statusChart" height="180"></canvas>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <canvas id="categoryChart" height="180"></canvas>
-                        </div>
-                    </div>
-
                     <input type="text"
                         id="searchInput"
                         class="form-control mb-3"
@@ -254,6 +244,68 @@ async function apiFetch(url, options = {}) {
 }
 
 /* =========================
+   NAVBAR
+========================= */
+function renderGuestNavbar() {
+    const nav = document.getElementById('nav-menu');
+
+    if (!nav) {
+        return;
+    }
+
+    nav.innerHTML = '';
+}
+
+function renderUserNavbar() {
+    const nav = document.getElementById('nav-menu');
+    const username = localStorage.getItem('username') || 'Warga';
+
+    if (!nav) {
+        return;
+    }
+
+    nav.innerHTML = `
+        <div class="ms-auto d-flex align-items-center gap-3">
+
+            <span class="text-white fw-bold">
+                <i class="bi bi-person-circle me-1 text-white"></i>
+                ${username}
+            </span>
+
+            <button
+                type="button"
+                class="btn btn-danger fw-bold"
+                id="logoutBtn">
+                <i class="bi bi-box-arrow-right me-1 text-white"></i>
+                Logout
+            </button>
+
+        </div>
+    `;
+
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('username');
+
+            const modalBackdrops = document.querySelectorAll('.modal-backdrop');
+            modalBackdrops.forEach(function (backdrop) {
+                backdrop.remove();
+            });
+
+            document.body.classList.remove('modal-open');
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('padding-right');
+
+            window.location.hash = '#login';
+        });
+    }
+}
+
+/* =========================
    ROUTER
 ========================= */
 function bootRouter() {
@@ -271,11 +323,11 @@ function bootRouter() {
 
 bootRouter();
 
-window.addEventListener('hashchange', handleRouting);
-
 function renderDashboardPage(app) {
 
     app.innerHTML = routes['#dashboard'];
+
+    renderUserNavbar();
 
     if (typeof loadDashboardData === 'function') {
         loadDashboardData('my_reports', 1);
@@ -285,11 +337,18 @@ function renderDashboardPage(app) {
         if (typeof initDashboard === 'function') {
             initDashboard();
         }
-
-        if (typeof renderChart === 'function') {
-            renderChart();
-        }
     }, 50);
+}
+
+function renderLoginPage(app) {
+
+    app.innerHTML = routes['#login'];
+
+    renderGuestNavbar();
+
+    if (typeof setupLoginForm === 'function') {
+        setupLoginForm();
+    }
 }
 
 function handleRouting() {
@@ -300,21 +359,13 @@ function handleRouting() {
     const hasToken = token && token !== 'null' && token !== 'undefined';
 
     const app = document.getElementById('app-content');
-    const nav = document.getElementById('nav-menu');
 
     if (!app) return;
 
     if (!hasToken && hash === '#dashboard') {
         localStorage.clear();
         window.location.hash = '#login';
-        app.innerHTML = routes['#login'];
-
-        if (nav) nav.innerHTML = '';
-
-        if (typeof setupLoginForm === 'function') {
-            setupLoginForm();
-        }
-
+        renderLoginPage(app);
         return;
     }
 
@@ -327,14 +378,7 @@ function handleRouting() {
     const safeRoute = hasToken ? hash : '#login';
 
     if (safeRoute === '#login') {
-        app.innerHTML = routes['#login'];
-
-        if (nav) nav.innerHTML = '';
-
-        if (typeof setupLoginForm === 'function') {
-            setupLoginForm();
-        }
-
+        renderLoginPage(app);
         return;
     }
 
@@ -350,13 +394,7 @@ function handleRouting() {
     }
 
     window.location.hash = '#login';
-    app.innerHTML = routes['#login'];
-
-    if (nav) nav.innerHTML = '';
-
-    if (typeof setupLoginForm === 'function') {
-        setupLoginForm();
-    }
+    renderLoginPage(app);
 }
 
 /* =========================
