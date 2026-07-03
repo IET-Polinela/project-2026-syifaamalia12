@@ -1,4 +1,13 @@
-const API_BASE_URL = "http://localhost:8000";
+const LOCAL_BACKEND_URL = "http://localhost:8000";
+const SERVER_BACKEND_URL = "http://103.151.63.87:8001";
+
+const isLocalFrontend =
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "localhost";
+
+const API_BASE_URL = isLocalFrontend
+    ? LOCAL_BACKEND_URL
+    : SERVER_BACKEND_URL;
 
 
 async function requestAPI(endpoint, method = 'GET', bodyData = null) {
@@ -23,7 +32,7 @@ async function requestAPI(endpoint, method = 'GET', bodyData = null) {
     }
 
     const response = await fetch(
-        `http://localhost:8000${endpoint}`,
+        `${API_BASE_URL}${endpoint}`,
         config
     );
 
@@ -44,7 +53,11 @@ async function apiFetch(url, options = {}) {
 
     const token = localStorage.getItem('access_token');
 
-    const res = await fetch(url, {
+    const finalUrl = url.startsWith('http')
+        ? url
+        : `${API_BASE_URL}${url}`;
+
+    const res = await fetch(finalUrl, {
         ...options,
         headers: {
             'Content-Type': 'application/json',
